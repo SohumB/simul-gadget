@@ -1,0 +1,10 @@
+<extension
+    name="Simultaneous Reveal Gadget"
+    description="A gadget for Google Wave that lets users reveal text simultaneously."
+    thumbnailUrl="http://github.com/SohumB/simul-gadget/raw/v1.0/preview.png"
+    version="1.0">
+  <author name="Sohum Banerjea" email="sohumb@gmail.com"/>
+  <menuHook location="TOOLBAR" text="Simultaneous Reveal Gadget" iconUrl="http://github.com/SohumB/simul-gadget/raw/v1.0/icon.png">
+    <insertGadget url="http://github.com/SohumB/simul-gadget/raw/v1.0/simul.xml"/>
+  </menuHook>
+</extension>
