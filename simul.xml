@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+  <ModulePrefs title="Simultaneous Reveal Gadget" height="40" author="Sohum Banerjea" author_email="sohumb@gmail.com" description="Simultaneously reveal text">
+    <Require feature="wave" />
+    <Require feature="dynamic-height" />
+    <Require feature="locked-domain" />
+  </ModulePrefs>
+  <Content type="html"><![CDATA[
+    <input type="text" id="toHide" size="45" onchange="submitToHide();" style="display: none" value="Type your thing to reveal here." />
+    <div id="display_div"></div>
+    <input type="button" id="reveal_button" style="margin-bottom: 6px; display: none" onclick="reveal();" value="Reveal all" />
+    <script type="text/javascript">
+    function submitToHide() {
+      var text = document.getElementById('toHide').value;
+      var viewer = wave.getViewer();
+      var delta = {};
+      delta[viewer.getId()] = text;
+      wave.getState().submitDelta(delta);
+    }
+
+    function reveal() {
+      wave.getState().submitDelta({'finished': 'true'});
+    }
+
+    function showUserText(participant, showtext) {
+      var text = wave.getState().get(participant.getId());
+      if (text) {
+        var div = document.createElement('div');
+        var img = document.createElement('img');
+        img.src = participant.getThumbnailUrl();
+        img.width = "20";
+        img.height = "20";
+        img.title = participant.getDisplayName();
+        img.style.verticalAlign = "middle";
+        img.style.paddingRight = "5px";
+        div.appendChild(img);
+        if (showtext) {
+          var span = document.createElement('span');
+          span.style.fontSize = "14px";
+          span.appendChild(document.createTextNode(text));
+          div.appendChild(span);
+        }
+        document.getElementById('display_div').appendChild(div);
+      }
+    }
+
+    function removeElement(id) {
+      var node = document.getElementById(id);
+      if (node) { node.parentNode.removeChild(node); }
+    }
+
+    function renderAll() {
+      if (!wave.getState()) {
+        return;
+      }
+      document.getElementById('display_div').innerHTML = '';
+
+      var participants = wave.getParticipants();
+      var finished = wave.getState().get("finished");
+      var viewerId = wave.getViewer().getId();
+      for (var i = 0; i < participants.length; ++i) {
+        var p = participants[i];
+        showUserText(p, finished || viewerId == p.getId());
+      }
+      if (finished) {
+        removeElement('toHide');
+        removeElement('reveal_button');
+      }
+
+      gadgets.window.adjustHeight();
+    }
+
+    function switchToReadOnly() {
+      document.getElementById('toHide').style.display = 'none';
+      document.getElementById('reveal_button').style.display = 'none';
+      gadgets.window.adjustHeight();
+    }
+
+    function switchToEdit() {
+      document.getElementById('toHide').style.display = null;
+      document.getElementById('reveal_button').style.display = null;
+      gadgets.window.adjustHeight();
+    }
+
+    function switchMode(waveMode) {
+      if (!waveMode) return;
+
+      switch (waveMode) {
+      case wave.Mode.EDIT:
+        switchToEdit();
+        break;
+      case wave.Mode.VIEW:
+        switchToReadOnly();
+        break;
+      case wave.Mode.PLAYBACK:
+        switchToReadOnly();
+        break;
+      }
+    }
+
+    function init() {
+      if (wave && wave.isInWaveContainer()) {
+        wave.setStateCallback(renderAll);
+        wave.setParticipantCallback(renderAll);
+        wave.setModeCallback(switchMode);
+      }
+    }
+    gadgets.util.registerOnLoadHandler(init);
+
+  ]]>
+  </Content>
+</Module>
