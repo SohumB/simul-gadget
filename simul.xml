@@ -6,9 +6,11 @@
     <Require feature="locked-domain" />
   </ModulePrefs>
   <Content type="html"><![CDATA[
-    <input type="text" id="toHide" size="45" onchange="submitToHide();" style="display: none" value="Type your thing to reveal here." />
-    <div id="display_div"></div>
-    <input type="button" id="reveal_button" style="margin-bottom: 6px; display: none" onclick="reveal();" value="Reveal all" />
+    <div id="frameMe" style="border-left: 1px solid; border-bottom: 1px solid; padding-left: 5px">
+    <input type="text" id="toHide" size="45" onchange="submitToHide();" style="padding-bottom: 3px; display: none" value="Type your thing to reveal here." />
+    <div id="display_div" style="padding-bottom: 2px"></div>
+    <input type="button" id="reveal_button" style="margin-left: 40px; margin-bottom: 6px; display: none" onclick="reveal();" value="Reveal all" />
+    </div>
     <script type="text/javascript">
     function submitToHide() {
       var text = document.getElementById('toHide').value;
@@ -33,6 +35,7 @@
         img.title = participant.getDisplayName();
         img.style.verticalAlign = "middle";
         img.style.paddingRight = "5px";
+        img.style.paddingBottom = "2px";
         div.appendChild(img);
         if (showtext) {
           var span = document.createElement('span');
@@ -77,8 +80,8 @@
     }
 
     function switchToEdit() {
-      document.getElementById('toHide').style.display = null;
-      document.getElementById('reveal_button').style.display = null;
+      document.getElementById('toHide').style.display = 'block';
+      document.getElementById('reveal_button').style.display = 'block';
       gadgets.window.adjustHeight();
     }
 
@@ -103,6 +106,7 @@
         wave.setStateCallback(renderAll);
         wave.setParticipantCallback(renderAll);
         wave.setModeCallback(switchMode);
+        wave.ui.makeButton(document.getElementById('reveal_button'));
       }
     }
     gadgets.util.registerOnLoadHandler(init);
